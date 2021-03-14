@@ -8,7 +8,7 @@ class MyAppR extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
       return Scaffold(
-      appBar: AppBar(title: Text("Mi busqueda"), backgroundColor: Colors.black45,),
+      appBar: AppBar(title: Text("Mi busqueda"), backgroundColor: Color(0xff5DBFA6),),
       body: MyApp()
       );
   }
@@ -44,13 +44,13 @@ class _MyAppState extends State<MyApp> {
   // }
 
   Future<void> getDatos() async {
-    List auxServicio = await TraerDatos.getServicios();
-    List auxLocation = await TraerDatos.getUbicacion();
+    List auxServicio = await TraerDatos.getServiciosM();
+    List auxLocation = await TraerDatos.getLugaresM();
     setState(() {
       listaServices = auxServicio;
       listaLocation = auxLocation;
       _selectService = listaServices[0]['nombre'];
-      _selectLocation = listaLocation[0]['nombre'];
+      _selectLocation = listaLocation[0]['direccion'];
       _selectHorario = listaHorario[0];
     });
   }
@@ -93,7 +93,7 @@ class _MyAppState extends State<MyApp> {
                 Padding(
                   padding: const EdgeInsets.only(top: 30),
                   child: RaisedButton(
-                    color: Colors.black45,
+                    color: Color(0xff5DBFA6),
                     textColor: Colors.black,
                     child: Text("Buscar"),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -137,7 +137,7 @@ class _MyAppState extends State<MyApp> {
      return new Container(
               child: new DropdownButton(
                 value: _selectLocation,
-                items: _listaComboBox(listaLocation, 'nombre'),
+                items: _listaComboBox(listaLocation, 'direccion'),
                 onChanged: (value){
                   setState(() {
                     _selectLocation = value;

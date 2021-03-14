@@ -1,4 +1,7 @@
-import 'package:busqueda/recuperarDatos.dart';
+import 'package:busqueda/buscador.dart';
+import 'package:busqueda/datosBusqueda.dart';
+import 'package:busqueda/PerfilEmpleado.dart';
+import 'package:busqueda/RadioList.dart';
 import 'package:busqueda/traerDatos.dart';
 import 'package:flutter/material.dart';
 import 'operaciones.dart';
@@ -7,56 +10,10 @@ class ListaTrabajos extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Lista de Trabajos"), backgroundColor: Colors.black45),
       body: ListaTrabajosF(),
-      drawer: _getDrawer(context),
     );
   }
 
-  Widget _getDrawer(BuildContext context){
-    return Container(
-      width: 200,
-      child: Drawer(
-      child: ListView(
-        children: <Widget>[
-          //Esto es una forma, pero tambien podemos hacerlo con el UserAccountsDrawerHeader, ej:
-            DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.purple
-              ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Icon(
-                  Icons.account_box,
-                  size: 40,
-                  ),
-                
-                  Padding(
-                    padding: const EdgeInsets.only(top: 100, right: 30),
-                    child: Text("Mis datos",
-                    style: TextStyle(color: Colors.black, fontSize: 20)
-                    ),
-                  ) 
-                      
-             ],
-           )
-          ),
-
-          Card(
-            color: Colors.black45,
-            child: ListTile(
-            title: Text("Buscar"),
-            leading: Icon(Icons.search),
-            onTap: ()=>Navigator.of(context).pushNamed("/busqueda")
-            )
-          )
-        ],
-        ),
-      )
-    );
-  }
 
 }
 
@@ -68,24 +25,30 @@ class ListaTrabajosF extends StatefulWidget{
 class ListaTrabajosState extends State<ListaTrabajosF>{
 
   var lista;
+  String selectService = "Todos";
+  String selectTurno = "Todos";
+  String selectUbicacion = "Todos";
 
   Widget build(BuildContext context) {
-    
     return Scaffold(
-      body: createItem() //Reemplaza al de abajo
-      // FutureBuilder<List> ( 
-      //   future: TraerDatos.getTodosServicios(),
-      //   builder: (context, snapshot) {
-      //       if(snapshot.hasError) print(snapshot.error);
-      //       return snapshot.hasData
-      //           ? _createItem(
-      //         lista: snapshot.data,
-      //       )
-      //           : new Center(
-      //         child: new CircularProgressIndicator(),
-      //       );
-      //     },
-      // ),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text("Lista de Trabajos"), backgroundColor: Color(0xff5DBFA6),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.filter_list),
+            onPressed: (){
+              _modalBottomSheet(context);
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () => showSearch(context: context, delegate: DataSearch())
+          )
+        ],
+      ),
+      body: createItem(),
+      // drawer: _getDrawer(context),
     );
   }
 
@@ -111,16 +74,17 @@ class ListaTrabajosState extends State<ListaTrabajosF>{
         itemCount: lista == null ? 0: lista.length,
         itemBuilder: (context, index) {
       return GestureDetector( 
-        onTap: (){
-          Navigator.of(context).pushNamed("/recuperarDatos", arguments: MisDatosParam(ci: lista[index]['ci'],
-                                                                                      nombreApellido: lista[index]['nombreYApellido'],
-                                                                                      direccion: lista[index]['nombreUbicacion'],
-                                                                                      profesion: lista[index]['nombre'],
-                                                                                      turno: lista[index]['turno'],
-                                                                                      descrip: lista[index]['descripcion'],
-                                                                                      calif: lista[index]['calificacion'],
-                                                                                      idServi: lista[index]['id']
-                                                                                      ));
+        onTap: () async {
+          List<dynamic> listaDatos = await TraerDatos.misDatos(lista[index]['id']);
+          Navigator.of(context).pushNamed("/recuperarDatos", arguments: MisDatosParam(
+                                            ci: listaDatos[0]['ci'].toString(),
+                                            nombre: listaDatos[0]['nombre'],
+                                            direccion: listaDatos[0]['direccion'],
+                                            email: listaDatos[0]['email'],
+                                            telef: listaDatos[0]['telefono'].toString(),
+                                            servicios: listaDatos[0]['servicios'],
+                                            imagen: listaDatos[0]['img_perfil']
+                                            ));
 
         },
         child: Row(
@@ -130,67 +94,35 @@ class ListaTrabajosState extends State<ListaTrabajosF>{
             child: Container(
               width: 320,
               height: 130,
-              child: Column(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Stack(
-                    children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8, left: 15),
+                    child: Image.network("https://fotografias.lasexta.com/clipping/cmsimages02/2019/11/14/66C024AF-E20B-49A5-8BC3-A21DD22B96E6/58.jpg",width: 80)
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top:  10,left: 40.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Operacion.textosEstilosDif("Nombre: " + lista[index]['nombre'],
+                    estilo: TextStyle(fontSize: 14, fontWeight: FontWeight.bold )),
 
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10, top: 18),
-                          child: Image.asset("assets/icono4.png", width: 100, height: 80)
-                        ),
+                    Operacion.textosEstilosDif("Dirección: " + lista[index]['direccion']),
 
-                        // Padding(
-                        //   padding: const EdgeInsets.only(left: 10),
-                        // child: Image.network(
-                        //   "https://cdn.icon-icons.com/icons2/1999/PNG/512/avatar_man_people_person_profile_user_icon_123385.png",
-                        //   height: 100, width: 100),
-                        // ),
+                    Operacion.textosEstilosDif("Teléfono: " + lista[index]['telefono'].toString()),
 
-                        Positioned(
-                          left: 110,
-                          bottom: 92, 
-                          child: Operacion.textosEstilosDif("Nombre: " + lista[index]['nombreYApellido'],
-                          estilo: TextStyle(fontSize: 14, fontWeight: FontWeight.bold )),
-                        ),
-
-                        Positioned(
-                          left: 120,
-                          top: 30,
-                          child: Operacion.textosEstilosDif("Dirección: " + lista[index]['nombreUbicacion']),
-                        ),
-
-                        Positioned(
-                          left: 120,
-                          top: 45,
-                          child: Operacion.textosEstilosDif("Profesión: " + lista[index]['nombre']),
-                        ),
-
-                        Positioned(
-                          left: 120,
-                          top: 60,
-                          child: Operacion.textosEstilosDif("Turno: " + lista[index]['turno']),
-                        ),
-
-                        Positioned(
-                          left: 120,
-                          top: 75,
-                          child: Operacion.textosEstilosDif("Calificación: " + lista[index]['calificacion']),
-                        ),
-                        
-                      Padding(
-                        padding: EdgeInsets.only(top: 100), 
-                        child: Operacion.nivelCalificacion(int.parse(lista[index]['calificacion']))
-                      )
+                    Operacion.textosEstilosDif("Turno: " )
                     ]
+                    ),
                   )
                 ],
               ),
               decoration: BoxDecoration(
                 border: Border.all(width: 1, color: Colors.black),
                 borderRadius: const BorderRadius.all(const Radius.circular(20)),
-                color: Colors.grey[300],
+                color: Colors.cyan[100],
               ),
             ),
           ),
@@ -203,279 +135,162 @@ class ListaTrabajosState extends State<ListaTrabajosF>{
     );
   }
   
+  void _modalBottomSheet(context){
 
-}
+    showModalBottomSheet(context: context,
+     shape : RoundedRectangleBorder(
+            borderRadius : BorderRadius.only(topLeft: const Radius.circular(20),
+                                             topRight: const Radius.circular(20))
+     ),
+     builder: (BuildContext bc){
+      return Container(
+        height: MediaQuery.of(context).size.height * .60,
+        child: ListView(
+          children: [
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_back, size: 25),
+                  onPressed: (){
+                    Navigator.of(context).pop();
+                  },
+                ),
+                // Spacer(),
 
+                Padding(
+                  padding: const EdgeInsets.only(left: 115),
+                  child: Text("Filtros", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+                Spacer(),
+                GestureDetector(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 18),
+                    child: Text("Reestablecer", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  ),
+                  onTap:(){
+                    _deleteOpciones();
+                    Navigator.pop(context); //No es lo correcto
+                    _modalBottomSheet(context);
+                  }
+                ),
 
+              ],
+            ),
+            _opciones(context, "Servicios", selectService),
 
+            _opciones(context, "Turnos", selectTurno),
 
+            _opciones(context, "Ubicacion", selectUbicacion),
+            
+            Container(
+              height: 100,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ButtonTheme(
+                  minWidth: 200,
+                  child: RaisedButton(
+                        child: Text("Ver Servicios"),
+                        onPressed: () async {
+                          if(selectService == "Todos" && selectTurno == "Todos")
+                            Navigator.pop(context);
+                          else
+                            Navigator.of(context).pushNamed(
+                              "/busquedaDatos",
+                              arguments: ParametroBusqueda(
+                                servicio: selectService,
+                                ubicacion: selectUbicacion,
+                                turno: turnoInt(selectTurno).toString()
+                              )
+                            );
+                        },
+                        color: Colors.cyan[200],
+                        textColor: Colors.black,
+                        padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        splashColor: Colors.grey,
+                        shape : RoundedRectangleBorder(
+                        borderRadius : BorderRadius.all(const Radius.circular(10),)
+                        ),
+                  ),
+                ),
+              ],
+            )
+          ],
+        )
+      );
+    });
+  }
 
-// class ListaTrabajosFul extends StatefulWidget{
+  _opciones(context, String nombreTitle, String nombreSubtitle){
+    return Row(
+      children: [
+        
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 18.0),
+              child: Text(nombreTitle, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 18.0),
+              child: Text(nombreSubtitle),
+            ),
+          ],
+        ),
+        
+        Spacer(),
 
-// ListaTrabajosState createState() => ListaTrabajosState();
+        IconButton(
+          icon: Icon(Icons.arrow_forward_ios, size: 25),
+          onPressed: ()async {
+            final result = await Navigator.of(context).push(
+                            MaterialPageRoute( builder: (context) => RadioList(
+                              nombreTitle
+                            ) ),
+                          ).whenComplete((){ 
+                            Navigator.pop(context);
+                            _modalBottomSheet(context);
+                          }); 
 
-// }
+            print(result);
+            if(result != null){
+              setState(() {
+                switch(nombreTitle){
+                  case "Servicios": selectService = result; break;
+                  case "Ubicacion": selectUbicacion = result; break;
+                  case "Turnos": selectTurno = result; break;
 
-// class ListaTrabajosState extends State<ListaTrabajosFul>{
+                }
+              });
+            }
+          },
+        ),
+        
+      ],
+    );
+  }
 
-//   Future<List> getTodosServicios() async {  
-//     http.Response response = await http.get('http://localhost/busqueda_empleos/datos/todosServicios.php');
+  _deleteOpciones(){
+    setState(() {
+      selectService = "Todos";
+      selectUbicacion = "Todos";
+      selectTurno = "Todos";
+    });
+  }
 
-//       return json.decode(response.body);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-    
-//     return Scaffold(
-//       appBar: AppBar(title: Text("Lista de Trabajos"), backgroundColor: Colors.black45),
-//       body: FutureBuilder<List> ( 
-//         future: getTodosServicios(),
-//         builder: (context, snapshot) {
-//             if(snapshot.hasError) print(snapshot.error);
-//             return snapshot.hasData
-//                 ? _createItem(
-//               lista: snapshot.data,
-//             )
-//                 : new Center(
-//               child: new CircularProgressIndicator(),
-//             );
-//           },
-//       ),
-//       drawer: _getDrawer(context),
-//     );
-//   }
-
-//   Widget _getDrawer(BuildContext context){
-//     return Container(
-//       width: 200,
-//       child: Drawer(
-//       child: ListView(
-//         children: <Widget>[
-//           //Esto es una forma, pero tambien podemos hacerlo con el UserAccountsDrawerHeader, ej:
-//             DrawerHeader(
-//             decoration: BoxDecoration(
-//               color: Colors.purple
-//               ),
-//             child: Row(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: <Widget>[
-//                 Icon(
-//                   Icons.account_box,
-//                   size: 40,
-//                   ),
-                
-//                   Padding(
-//                     padding: const EdgeInsets.only(top: 100, right: 30),
-//                     child: Text("Mis datos",
-//                     style: TextStyle(color: Colors.black, fontSize: 20)
-//                     ),
-//                   ) 
-                      
-//              ],
-//            )
-//           ),
-
-//           Card(
-//             color: Colors.black45,
-//             child: ListTile(
-//             title: Text("Buscar"),
-//             leading: Icon(Icons.search),
-//             onTap: ()=>pasarBusqueda(context)
-//             )
-//           )
-//         ],
-//         ),
-//       )
-//     );
-//   }
-
-//   // _mostrarItem(){
-//   //   return ListView.builder(
-//   //           itemCount: 13,  
-//   //           //itemBuilder: (context, index) => _createItem(context, index)
-          
-//   //       );
-//   // }
-
-//     Widget _createItem({List lista}) {
-
-//       return ListView.builder(
-//         itemCount: lista == null ? 0: lista.length,
-//         itemBuilder: (context, index) {
-//       return GestureDetector( 
-//         onTap: (){
-//           Navigator.of(context).pushNamed("/recuperarDatos");
-
-//         },
-//         child: Row(
-//         children: [
-//           Padding(
-//             padding: const EdgeInsets.only(left:20, top: 20),
-//             child: Container(
-//               width: 320,
-//               height: 130,
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Stack(
-//                     children: [
-
-//                         Padding(
-//                           padding: const EdgeInsets.only(left: 10),
-//                           child: Image.network(
-//                           "https://cdn.icon-icons.com/icons2/1999/PNG/512/avatar_man_people_person_profile_user_icon_123385.png",
-//                           height: 100, width: 100),
-//                         ),
-
-//                         Positioned(
-//                           left: 110,
-//                           bottom: 92, 
-//                           child: Operacion.textosEstilosDif("Nombre: " + lista[index]['nombreYApellido'],
-//                           estilo: TextStyle(fontSize: 20, fontWeight: FontWeight.bold )),
-//                         ),
-
-//                         Positioned(
-//                           left: 120,
-//                           top: 30,
-//                           child: Operacion.textosEstilosDif("Dirección: " + lista[index]['nombreUbicacion']),
-//                         ),
-
-//                         Positioned(
-//                           left: 120,
-//                           top: 45,
-//                           child: Operacion.textosEstilosDif("Profesión: " + lista[index]['nombre']),
-//                         ),
-
-//                         Positioned(
-//                           left: 120,
-//                           top: 60,
-//                           child: Operacion.textosEstilosDif("Turno: " + lista[index]['turno']),
-//                         ),
-
-//                         Positioned(
-//                           left: 120,
-//                           top: 75,
-//                           child: Operacion.textosEstilosDif("Calificación: " + lista[index]['calificacion']),
-//                         ),
-                        
-//                       Padding(
-//                         padding: EdgeInsets.only(top: 100), 
-//                         child: Operacion.nivelCalificacion(int.parse(lista[index]['calificacion']))
-//                       )
-//                     ]
-//                   )
-//                 ],
-//               ),
-//               decoration: BoxDecoration(
-//                 border: Border.all(width: 1, color: Colors.black),
-//                 borderRadius: const BorderRadius.all(const Radius.circular(20)),
-//                 color: Colors.grey[300],
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//      );
-//     }
-//     );
-//   }
-
-
-//   void pasarBusqueda(BuildContext context){
-//     Navigator.of(context).pushNamed("/busqueda");
-//   }
-
-// }
-
-
-// class ElementosLista extends StatelessWidget{
-//   final List lista;
-//   ElementosLista({this.lista});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return ListView.builder(
-//         itemCount: lista == null ? 0: lista.length,
-//         itemBuilder: (context, index) {
-//       return GestureDetector( 
-//         onTap: (){
-//           Navigator.of(context).pushNamed("/recuperarDatos");
-
-//         },
-//         child: Row(
-//         children: [
-//           Padding(
-//             padding: const EdgeInsets.only(left:20, top: 20),
-//             child: Container(
-//               width: 320,
-//               height: 130,
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Stack(
-//                     children: [
-
-//                         Padding(
-//                           padding: const EdgeInsets.only(left: 10),
-//                           child: Image.network(
-//                           "https://cdn.icon-icons.com/icons2/1999/PNG/512/avatar_man_people_person_profile_user_icon_123385.png",
-//                           height: 100, width: 100),
-//                         ),
-
-//                         Positioned(
-//                           left: 110,
-//                           bottom: 92, 
-//                           child: Operacion.textosEstilosDif("Nombre: " + lista[index]['nombreYApellido'],
-//                           estilo: TextStyle(fontSize: 20, fontWeight: FontWeight.bold )),
-//                         ),
-
-//                         Positioned(
-//                           left: 120,
-//                           top: 30,
-//                           child: Operacion.textosEstilosDif("Dirección: " + lista[index]['nombreUbicacion']),
-//                         ),
-
-//                         Positioned(
-//                           left: 120,
-//                           top: 45,
-//                           child: Operacion.textosEstilosDif("Profesión: " + lista[index]['nombre']),
-//                         ),
-
-//                         Positioned(
-//                           left: 120,
-//                           top: 60,
-//                           child: Operacion.textosEstilosDif("Turno: " + lista[index]['turno']),
-//                         ),
-
-//                         Positioned(
-//                           left: 120,
-//                           top: 75,
-//                           child: Operacion.textosEstilosDif("Calificación: " + lista[index]['calificacion']),
-//                         ),
-                        
-//                       Padding(
-//                         padding: EdgeInsets.only(top: 100), 
-//                         child: Operacion.nivelCalificacion(int.parse(lista[index]['calificacion']))
-//                       )
-//                     ]
-//                   )
-//                 ],
-//               ),
-//               decoration: BoxDecoration(
-//                 border: Border.all(width: 1, color: Colors.black),
-//                 borderRadius: const BorderRadius.all(const Radius.circular(20)),
-//                 color: Colors.grey[300],
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//      );
-//     }
-//     );
-//   }
-
+  int turnoInt(String s){
+   
+   switch(s){
+     case 'Mañana': return 1;
+     break;
+     case 'Tarde': return 2;
+     break;
+     case 'Noche': return 3;
+     break;
+     default: return -1;
+   }
+ }
   
-// }
+}
