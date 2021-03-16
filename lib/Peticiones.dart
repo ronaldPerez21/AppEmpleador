@@ -19,42 +19,6 @@ class TraerDatos{
     }
   }
 
-
-  static Future<List<dynamic>> buscarUsuario(String servicio, String ubicacion, String horario) async {
-    http.Response response = await http.post('http://192.168.56.1/busqueda_empleos/datos/buscarUsuario.php', body: {
-      'nomServicio': servicio,
-      'nomUbicacion': ubicacion,
-      'turno': horario
-    });
-
-  if(response.statusCode == 200){
-    print('petición correcta');
-    print(response.statusCode);
-
-    final jsonData = jsonDecode(response.body);
-    List<dynamic> mapDatos = jsonData;
-    return mapDatos;
-  }else{
-    return null;
-  }
-
-}
-
-static Future<List<dynamic>> getServicios() async {
-  
-    http.Response response = await http.get('http://192.168.56.1/busqueda_empleos/datos/servicios.php');
-
-    if(response.statusCode == 200){
-      print('petición correcta');
-
-      final jsonData = jsonDecode(response.body);
-      List<dynamic> mapDatos = jsonData;
-      return mapDatos;
-    }else{
-      return null;
-    }
-  }
-
   static  Future<String> calificar(String calif, String ciEmple, String idServi) async {
     http.Response response = await http.post('http://192.168.56.1/busqueda_empleos/datos/actualizarCalificacion.php', body: {
       'calificacion': calif,
@@ -72,21 +36,6 @@ static Future<List<dynamic>> getServicios() async {
     }
   }
 
-  static Future<List<dynamic>> getUbicacion() async {
-  
-    http.Response response = await http.get('http://192.168.56.1/busqueda_empleos/datos/ubicacion.php');
-
-    if(response.statusCode == 200){
-      print('petición correcta');
-
-      final jsonData = jsonDecode(response.body);
-      List<dynamic> mapDatos = jsonData;
-      return mapDatos;
-    }else{
-      return null;
-    }
-
-  }
 
   /**-------------------------Modificaciones------------------------ */
     static Future<dynamic> getServiciosAndLugares() async {
@@ -172,6 +121,44 @@ static Future<List<String>> serviciosEjercidos(id) async {
       
     }
     return listaServi;
+}
+
+static Future<List<dynamic>> getEmpleadosPorServicio(String servicio) async {
+  http.Response response = await http.post('https://topicos-web.herokuapp.com/api/trabajadores/servicio', body: {
+    'servicio': servicio,
+  });
+
+  if(response.statusCode == 200){
+    print('petición correcta');
+    print(response.statusCode);
+
+    final jsonData = jsonDecode(response.body);
+    return jsonData;
+  }else{
+    return null;
+  }
+}
+
+static Future<Map<String, dynamic>> solictarServicio(idServicio, idTrabajador, descripcion, latitud, longitud) async {
+    http.Response response = await http.post('https://topicos-web.herokuapp.com/api/solicitud', body: {
+      'servicio_id': idServicio.toString(),
+      'trabajador_id': idTrabajador.toString(),
+      'descripcion': descripcion,
+      'latitud': latitud.toString(),
+      'longitud': longitud.toString()
+    });
+
+  if(response.statusCode == 200){
+    print('petición correcta');
+    print(response.statusCode);
+
+    final jsonData = jsonDecode(response.body);
+    print(jsonData);
+    return jsonData;
+  }else{
+    return null;
+  }
+
 }
 
 }

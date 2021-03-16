@@ -1,5 +1,4 @@
-import 'package:busqueda/listaTrabajos.dart';
-import 'package:busqueda/traerDatos.dart';
+import 'package:busqueda/Peticiones.dart';
 import 'package:flutter/material.dart';
 
 

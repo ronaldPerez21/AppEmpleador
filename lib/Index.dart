@@ -1,10 +1,10 @@
-import 'package:busqueda/buscador.dart';
-import 'package:busqueda/datosBusqueda.dart';
+import 'package:busqueda/Buscador.dart';
+import 'package:busqueda/FiltrosServicios.dart';
 import 'package:busqueda/PerfilEmpleado.dart';
 import 'package:busqueda/RadioList.dart';
-import 'package:busqueda/traerDatos.dart';
+import 'package:busqueda/Peticiones.dart';
 import 'package:flutter/material.dart';
-import 'operaciones.dart';
+import 'Operaciones.dart';
 
 class ListaTrabajos extends StatelessWidget{
   @override
@@ -29,33 +29,49 @@ class ListaTrabajosState extends State<ListaTrabajosF>{
   String selectTurno = "Todos";
   String selectUbicacion = "Todos";
 
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text("Lista de Trabajos"), backgroundColor: Color(0xff5DBFA6),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.filter_list),
-            onPressed: (){
-              _modalBottomSheet(context);
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () => showSearch(context: context, delegate: DataSearch())
-          )
-        ],
-      ),
-      body: createItem(),
-      // drawer: _getDrawer(context),
-    );
-  }
-
   void initState(){
     super.initState();
     refrescar();
+  }
 
+
+  Widget build(BuildContext context) {
+    return FutureBuilder<List>(
+          future: TraerDatos.getServiciosM(),
+          builder: (context, snapshot) {
+            if(snapshot.hasData){
+              return Scaffold(
+                appBar: AppBar(
+                  automaticallyImplyLeading: false,
+                  title: Text('Lista de Trabajos'),
+                  backgroundColor: Color(0xff5DBFA6),
+                  actions: [
+                    IconButton(
+                      icon: Icon(Icons.filter_list),
+                      onPressed: (){
+                        _modalBottomSheet(context);
+                      },
+                    ),
+
+                    IconButton(
+                        icon: Icon(Icons.search),
+                        tooltip: 'Buscar',
+                        onPressed: !snapshot.hasData ? null : () {
+                          showSearch(
+                            context: context,
+                            delegate: DataSearch(snapshot.data),
+                          );
+                        }
+                    ),
+
+                  ],
+                ),
+                body: createItem(),
+              );
+            }else return Center(
+                child: new CircularProgressIndicator());
+          }
+      );
   }
 
   Future<Null> refrescar() async {
@@ -75,32 +91,34 @@ class ListaTrabajosState extends State<ListaTrabajosF>{
         itemBuilder: (context, index) {
       return GestureDetector( 
         onTap: () async {
-          List<dynamic> listaDatos = await TraerDatos.misDatos(lista[index]['id']);
-          Navigator.of(context).pushNamed("/recuperarDatos", arguments: MisDatosParam(
-                                            ci: listaDatos[0]['ci'].toString(),
-                                            nombre: listaDatos[0]['nombre'],
-                                            direccion: listaDatos[0]['direccion'],
-                                            email: listaDatos[0]['email'],
-                                            telef: listaDatos[0]['telefono'].toString(),
-                                            servicios: listaDatos[0]['servicios'],
-                                            imagen: listaDatos[0]['img_perfil']
-                                            ));
+          List<dynamic> misDatos = await TraerDatos.misDatos(lista[index]['id']);
+          int cantidadServi = misDatos[0]['servicios'].length;
+          Navigator.of(context).pushNamed("/recuperarDatos", 
+                                          arguments: MisDatosParam( id: lista[index]['id'].toString(),
+                                                                    cantServicios: cantidadServi ));
 
         },
-        child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left:20, top: 20),
-            child: Container(
-              width: 320,
-              height: 130,
+        child: Card(
+          color: Colors.white60,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          elevation: 5,
+          margin: EdgeInsets.all(8),
+          child: Row(
+          children: [
+            Expanded(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 8, left: 15),
-                    child: Image.network("https://fotografias.lasexta.com/clipping/cmsimages02/2019/11/14/66C024AF-E20B-49A5-8BC3-A21DD22B96E6/58.jpg",width: 80)
+                    padding: const EdgeInsets.all(8),
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage:  NetworkImage("https://fotografias.lasexta.com/clipping/cmsimages02/2019/11/14/66C024AF-E20B-49A5-8BC3-A21DD22B96E6/58.jpg",),
+                       
+                        
+                      )
                   ),
+
                   Padding(
                     padding: const EdgeInsets.only(top:  10,left: 40.0),
                     child: Column(
@@ -119,14 +137,9 @@ class ListaTrabajosState extends State<ListaTrabajosF>{
                   )
                 ],
               ),
-              decoration: BoxDecoration(
-                border: Border.all(width: 1, color: Colors.black),
-                borderRadius: const BorderRadius.all(const Radius.circular(20)),
-                color: Colors.cyan[100],
-              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
      );
     }

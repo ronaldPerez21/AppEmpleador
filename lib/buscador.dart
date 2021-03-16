@@ -1,33 +1,13 @@
+import 'package:busqueda/BusquedaPorServicio.dart';
 import 'package:flutter/material.dart';
 
 
 class DataSearch extends SearchDelegate<String> {
-  final cities = [
-    "Abejorral",
-    "Amalfi",
-    "Andes",
-    "Angostura",
-    "Arboletes",
-    "Argelia",
-    "Armenia",
-    "Barbosa",
-    "Bello",
-    "Belmira",
-    "Betania",
-    "Betulia",
-    "Caicedo",
-    "Caldas",
-    "Campamento",
-    "Caramanta",
-    "Carepa",
-    "Caucasia",
-    "Cisneros ",
-    "Concordia",
-    "Copacabana",
-    "Dabeiba"
-  ];
+  String get searchFieldLabel => "Buscar";
+  List<String> cities;
+  final recentCities = ["Ejemplo: Plomeria"];
 
-  final recentCities = ["Cisneros", "Concordia", "Copacabana", "Dabeiba"];
+  DataSearch(this.cities);
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -57,16 +37,7 @@ class DataSearch extends SearchDelegate<String> {
   @override
   Widget buildResults(BuildContext context) {
     // ahow some result based on the selection
-    return Center(
-      child: Container(
-        height: 100,
-        width: 100,
-        child: Card(
-          color: Colors.red,
-          child: Text(query),
-        )
-      ),
-    );
+    return BusquedaPorServicio(query);
   }
 
   @override
@@ -82,7 +53,7 @@ class DataSearch extends SearchDelegate<String> {
             onTap: (){
               showResults(context);
             },
-            leading: Icon(Icons.location_city),
+            leading: Icon(Icons.work),
             title: RichText(
                 text: TextSpan(
                     text: suggestionList[index].substring(0, query.length),
