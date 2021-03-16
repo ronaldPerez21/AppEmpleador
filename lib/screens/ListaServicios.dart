@@ -1,9 +1,9 @@
 
-import 'package:busqueda/PerfilEmpleado.dart';
-import 'package:busqueda/Operaciones.dart';
-import 'package:busqueda/Peticiones.dart';
+import 'package:busqueda/screens/modals/operaciones.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'modals/PerfilEmpleado.dart';
 
 class ListaServicios extends StatefulWidget{
   Future<List<dynamic>> futuro;

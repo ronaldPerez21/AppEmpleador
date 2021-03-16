@@ -1,4 +1,4 @@
-import 'package:busqueda/BusquedaPorServicio.dart';
+import 'package:busqueda/screens/BusquedaPorServicio.dart';
 import 'package:flutter/material.dart';
 
 

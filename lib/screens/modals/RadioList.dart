@@ -1,4 +1,4 @@
-import 'package:busqueda/Peticiones.dart';
+import 'package:busqueda/api/Peticiones.dart';
 import 'package:flutter/material.dart';
 
 

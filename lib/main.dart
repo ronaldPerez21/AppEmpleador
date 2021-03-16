@@ -1,9 +1,8 @@
-import 'package:busqueda/FiltrosServicios.dart';
-import 'package:busqueda/PerfilEmpleado.dart';
-import 'package:busqueda/Solicitar.dart';
+import 'package:busqueda/screens/modals/FiltrosServicios.dart';
+import 'package:busqueda/screens/modals/PerfilEmpleado.dart';
 import 'package:flutter/material.dart';
 
-import 'Index.dart';
+import 'screens/Index.dart';
 
 void main() {
   runApp(MyApp());

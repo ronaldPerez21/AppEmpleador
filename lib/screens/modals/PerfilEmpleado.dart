@@ -1,9 +1,9 @@
-import 'package:busqueda/Mapa.dart';
-import 'package:busqueda/Solicitar.dart';
-import 'package:busqueda/Peticiones.dart';
-import 'package:flutter/material.dart';
 
-import 'Operaciones.dart';
+import 'package:busqueda/api/Peticiones.dart';
+import 'package:busqueda/screens/modals/operaciones.dart';
+import 'package:busqueda/screens/solicitar.dart';
+import 'package:flutter/material.dart';
+import 'Mapa.dart';
 
 class RecuperarDatos extends StatelessWidget{
     @override

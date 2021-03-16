@@ -1,10 +1,10 @@
-import 'package:busqueda/Buscador.dart';
-import 'package:busqueda/FiltrosServicios.dart';
-import 'package:busqueda/PerfilEmpleado.dart';
-import 'package:busqueda/RadioList.dart';
-import 'package:busqueda/Peticiones.dart';
+import 'package:busqueda/api/Peticiones.dart';
+import 'package:busqueda/screens/modals/FiltrosServicios.dart';
+import 'package:busqueda/screens/modals/PerfilEmpleado.dart';
+import 'package:busqueda/screens/modals/RadioList.dart';
+import 'package:busqueda/screens/modals/buscador.dart';
+import 'package:busqueda/screens/modals/operaciones.dart';
 import 'package:flutter/material.dart';
-import 'Operaciones.dart';
 
 class ListaTrabajos extends StatelessWidget{
   @override

@@ -1,7 +1,8 @@
 
-import 'package:busqueda/MapaBusqueda.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import 'modals/MapaBusqueda.dart';
 
 
 class Solicitud extends StatefulWidget{
@@ -96,8 +97,6 @@ class SolicitudState extends State<Solicitud>{
   
 
   _mostrarServicios(BuildContext context, String servi){
-
-   
   return Card(
       color: Colors.teal[100],
       margin: EdgeInsets.all(8),

@@ -1,8 +1,6 @@
 
-import 'package:busqueda/ListaServicios.dart';
-import 'package:busqueda/PerfilEmpleado.dart';
-import 'package:busqueda/Operaciones.dart';
-import 'package:busqueda/Peticiones.dart';
+import 'package:busqueda/api/Peticiones.dart';
+import 'package:busqueda/screens/ListaServicios.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
