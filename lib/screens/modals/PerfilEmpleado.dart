@@ -98,18 +98,19 @@ class RecuperarDatosState extends State<RecuperarDatosF> {
                                       print("select Servi: ${this.serviciosSelect}");
                                       // print(listDatos[0]['persona_id']);
                                       
-                                      // for (var i = 0; i < this.serviciosSelect.length; i++) {
-                                      //   if(this.serviciosSelect[i]['resultado'] != null){
-                                      //     if(this.serviciosSelect[i]['resultado']['ubicacion'] != null){
-                                      //       await TraerDatos.solictarServicio(
-                                      //         this.serviciosSelect[i]['id'],
-                                      //         listDatos[0]['persona_id'], 
-                                      //         this.serviciosSelect[i]['descripcion'], 
-                                      //         this.serviciosSelect[i]['resultado']['ubicacion'], 
-                                      //         this.serviciosSelect[i]['resultado']['ubicacion']);
-                                      //     }
-                                      //   }
-                                      // }
+                                      for (var i = 0; i < this.serviciosSelect.length; i++) {
+                                        if(this.serviciosSelect[i]['resultado'] != null){
+                                          if(this.serviciosSelect[i]['resultado']['ubicacion'] != null){
+                                            await TraerDatos.solictarServicio(
+                                              this.serviciosSelect[i]['id'],
+                                              listDatos[0]['persona_id'], 
+                                              this.serviciosSelect[i]['resultado']['descripcion'], 
+                                              this.serviciosSelect[i]['resultado']['ubicacion'].latitude, 
+                                              this.serviciosSelect[i]['resultado']['ubicacion'].longitude
+                                            );
+                                          }
+                                        }
+                                      }
                                     }
                                   ),
                                   Padding(

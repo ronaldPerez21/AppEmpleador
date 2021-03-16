@@ -168,6 +168,7 @@ Future<void> requestPermission() async { await Permission.location.request(); }
           // print("Longitud: ${result[0].position.longitude}");
           
           LatLng tappedPoint = LatLng(result[0].latitude, result[0].longitude);  
+          print(tappedPoint.latitude);
           setState(() {
             myMarker = [];
             myMarker.add(
@@ -186,23 +187,6 @@ Future<void> requestPermission() async { await Permission.location.request(); }
       print(e);
     });
     
-  }
-
-   _showSnackbar(BuildContext context){
-    SnackBar snackbar= SnackBar(
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text("Registro satisfactorio",
-                        style: TextStyle(fontSize: 18,
-                        color: Colors.black
-                        )
-           ),
-        ],
-      ),
-      backgroundColor: Color(0xff5DBFA6) 
-    );
-    Scaffold.of(context).showSnackBar(snackbar);
   }
           
   void onMapCreated(controller) {
