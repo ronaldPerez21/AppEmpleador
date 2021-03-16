@@ -153,7 +153,6 @@ static Future<Map<String, dynamic>> solictarServicio(idServicio, idTrabajador, d
     print(response.statusCode);
 
     final jsonData = jsonDecode(response.body);
-    print(jsonData);
     return jsonData;
   }else{
     return null;
