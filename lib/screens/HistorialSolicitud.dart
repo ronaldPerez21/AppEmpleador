@@ -69,12 +69,11 @@ Widget build(BuildContext context) {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                        Operacion.textosEstilosDif("Descripción: " + lista[index]['descripcion'],
-                        estilo: TextStyle(fontSize: 14, fontWeight: FontWeight.bold )),
+                        Operacion.textStyleTitleSubtitleSinIcon("Nombre: ", lista[index]['nombre'], 16),
 
-                        Operacion.textosEstilosDif("Fecha: " + lista[index]['fecha']),
+                        Operacion.textStyleTitleSubtitleSinIcon("Descripcion: ", lista[index]['descripcion'], 16),
 
-                        Operacion.textosEstilosDif("Estado: " + lista[index]['estado'].toString()),
+                        Operacion.textStyleTitleSubtitleSinIcon("Fecha: ", lista[index]['fecha'].toString(), 16),
                         ]
                         ),
                       ),

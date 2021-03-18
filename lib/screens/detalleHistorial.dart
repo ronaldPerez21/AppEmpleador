@@ -1,6 +1,5 @@
 
 
-import 'package:busqueda/api/Peticiones.dart';
 import 'package:busqueda/screens/modals/Mapa.dart';
 import 'package:busqueda/screens/modals/operaciones.dart';
 import 'package:flutter/material.dart';

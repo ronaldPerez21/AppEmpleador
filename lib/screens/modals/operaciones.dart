@@ -50,6 +50,30 @@ class Operacion{
       ),
     );
   }
+
+  static textStyleTitleSubtitleSinIcon(title, subtitle, double size){
+    return Text.rich(
+      TextSpan(
+        children: <TextSpan>[
+          TextSpan(
+              text: title,
+              style: TextStyle(
+                fontSize: size,
+                fontWeight: FontWeight.bold
+              )),
+          TextSpan(
+              text: ' ',
+              style: TextStyle(fontSize: size)
+          ),
+
+          TextSpan(
+            text: subtitle,
+            style:  TextStyle(fontSize: size)
+          ),
+        ],
+      ),
+    );
+  }
   
   static nivelCalificacion(int n){
     List<Icon> estrellas = new List();
