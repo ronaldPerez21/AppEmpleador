@@ -151,13 +151,30 @@ static Future<Map<String, dynamic>> solictarServicio(idServicio, idTrabajador, d
   if(response.statusCode == 200){
     print('petición correcta');
     print(response.statusCode);
-
+    
     final jsonData = jsonDecode(response.body);
+    print("sers: $jsonData");
     return jsonData;
+    
   }else{
     return null;
   }
 
 }
+
+  static Future<List<dynamic>> getHistorialSolicitudes() async {  
+    http.Response response = await http.get('https://topicos-web.herokuapp.com/api/empleador/historial');
+
+    if(response.statusCode == 200){
+      print('petición correcta');
+      print(response.statusCode);
+
+      final jsonData = jsonDecode(response.body);
+      List<dynamic> mapDatos = jsonData;
+      return mapDatos;
+    }else{
+      return null;
+    }
+  }
 
 }

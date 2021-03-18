@@ -1,9 +1,8 @@
 import 'package:busqueda/api/Peticiones.dart';
+import 'package:busqueda/screens/ListaServicios.dart';
 import 'package:busqueda/screens/modals/FiltrosServicios.dart';
-import 'package:busqueda/screens/modals/PerfilEmpleado.dart';
 import 'package:busqueda/screens/modals/RadioList.dart';
 import 'package:busqueda/screens/modals/buscador.dart';
-import 'package:busqueda/screens/modals/operaciones.dart';
 import 'package:flutter/material.dart';
 
 class ListaTrabajos extends StatelessWidget{
@@ -24,127 +23,95 @@ class ListaTrabajosF extends StatefulWidget{
 
 class ListaTrabajosState extends State<ListaTrabajosF>{
 
-  var lista;
+  var listServices;
   String selectService = "Todos";
   String selectTurno = "Todos";
   String selectUbicacion = "Todos";
 
   void initState(){
     super.initState();
-    refrescar();
+    loadServices();
   }
 
-
-  Widget build(BuildContext context) {
-    return FutureBuilder<List>(
-          future: TraerDatos.getServiciosM(),
-          builder: (context, snapshot) {
-            if(snapshot.hasData){
-              return Scaffold(
-                appBar: AppBar(
-                  automaticallyImplyLeading: false,
-                  title: Text('Lista de Trabajos'),
-                  backgroundColor: Color(0xff5DBFA6),
-                  actions: [
-                    IconButton(
-                      icon: Icon(Icons.filter_list),
-                      onPressed: (){
-                        _modalBottomSheet(context);
-                      },
-                    ),
-
-                    IconButton(
-                        icon: Icon(Icons.search),
-                        tooltip: 'Buscar',
-                        onPressed: !snapshot.hasData ? null : () {
-                          showSearch(
-                            context: context,
-                            delegate: DataSearch(snapshot.data),
-                          );
-                        }
-                    ),
-
-                  ],
-                ),
-                body: createItem(),
-              );
-            }else return Center(
-                child: new CircularProgressIndicator());
-          }
-      );
-  }
-
-  Future<Null> refrescar() async {
-    await new Future.delayed(new Duration(milliseconds: 1));
-    var auxLista = await TraerDatos.getTodosServicios();
+  Future<Null> loadServices() async {
+    var auxLista = await TraerDatos.getServiciosM();
     setState((){
-      lista = auxLista;
+      listServices= auxLista;
     });
     return null;
   }
 
-  Widget createItem() {
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        // automaticallyImplyLeading: false,
+        title: Text('Lista de Trabajos'),
+        backgroundColor: Color(0xff5DBFA6),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.filter_list),
+            onPressed: (){
+              _modalBottomSheet(context);
+            },
+          ),
 
-      return RefreshIndicator( 
-      child: ListView.builder(
-        itemCount: lista == null ? 0: lista.length,
-        itemBuilder: (context, index) {
-      return GestureDetector( 
-        onTap: () async {
-          List<dynamic> misDatos = await TraerDatos.misDatos(lista[index]['id']);
-          int cantidadServi = misDatos[0]['servicios'].length;
-          Navigator.of(context).pushNamed("/recuperarDatos", 
-                                          arguments: MisDatosParam( id: lista[index]['id'].toString(),
-                                                                    cantServicios: cantidadServi ));
+          IconButton(
+              icon: Icon(Icons.search),
+              tooltip: 'Buscar',
+              onPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: DataSearch(listServices),
+                );
+              }
+          ),
 
-        },
-        child: Card(
-          color: Colors.white60,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          elevation: 5,
-          margin: EdgeInsets.all(8),
-          child: Row(
-          children: [
-            Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage:  NetworkImage("https://fotografias.lasexta.com/clipping/cmsimages02/2019/11/14/66C024AF-E20B-49A5-8BC3-A21DD22B96E6/58.jpg",),
-                       
-                        
-                      )
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.only(top:  10,left: 40.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                    Operacion.textosEstilosDif("Nombre: " + lista[index]['nombre'],
-                    estilo: TextStyle(fontSize: 14, fontWeight: FontWeight.bold )),
-
-                    Operacion.textosEstilosDif("Dirección: " + lista[index]['direccion']),
-
-                    Operacion.textosEstilosDif("Teléfono: " + lista[index]['telefono'].toString()),
-
-                    Operacion.textosEstilosDif("Turno: " )
-                    ]
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
-     );
-    }
-    ),
-    onRefresh: refrescar,
+      body: ListaServicios(TraerDatos.getTodosServicios()),
+      drawer: _getDrawer(context)
+    );
+  }
+
+    Widget _getDrawer(BuildContext context){
+    return Container(
+      width: 200,
+      child: Drawer(
+      child: ListView(
+        children: <Widget>[
+          //Esto es una forma, pero tambien podemos hacerlo con el UserAccountsDrawerHeader, ej:
+            DrawerHeader(
+            decoration: BoxDecoration(
+              color: Color(0xff5DBFA6)
+              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Icon(
+                  Icons.account_box,
+                  size: 40,
+                  ),
+                
+                  Text("Mis Datos",
+                  style: TextStyle(color: Colors.black, fontSize: 20)
+                  ) 
+                      
+             ],
+           )
+          ),
+
+          Card(
+            color: Color(0xff5DBFA6),
+            child: ListTile(
+            title: Text("Solicitudes", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            leading: Icon(Icons.search),
+            onTap: ()=>Navigator.of(context).pushNamed("/historial")
+            )
+          )
+        ],
+        ),
+      )
     );
   }
   

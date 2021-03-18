@@ -1,4 +1,5 @@
 
+import 'package:busqueda/api/Peticiones.dart';
 import 'package:busqueda/screens/modals/operaciones.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class ListaServicios extends StatefulWidget{
 }
 
 class ListaServiciosState extends State<ListaServicios>{
+  var lista;
   @override
   Widget build(BuildContext context) {
     // ParamListaServicios arguments = ModalRoute.of(context).settings.arguments;
@@ -38,9 +40,12 @@ class ListaServiciosState extends State<ListaServicios>{
           itemCount: lista == null ? 0: lista.length,
           itemBuilder: (context, index) {
             return GestureDetector( 
-              onTap: (){
+              onTap: () async {
+                List<dynamic> misDatos = await TraerDatos.misDatos(lista[index]['id']);
+                int cantidadServi = misDatos[0]['servicios'].length;
                 Navigator.of(context).pushNamed("/recuperarDatos", 
-                                                arguments: MisDatosParam(id: lista[index]['id'].toString() ));
+                                                arguments: MisDatosParam( id: lista[index]['id'].toString(),
+                                                                          cantServicios: cantidadServi ));
 
               },
               child: Card(
@@ -91,6 +96,15 @@ class ListaServiciosState extends State<ListaServicios>{
       ),
       onRefresh: () => widget.futuro,
     );
+  }
+
+   Future<Null> refrescar() async {
+    // await new Future.delayed(new Duration(milliseconds: 1));
+    var auxLista = await TraerDatos.getServiciosM();
+    setState((){
+      lista = auxLista;
+    });
+    return null;
   }
 
 }

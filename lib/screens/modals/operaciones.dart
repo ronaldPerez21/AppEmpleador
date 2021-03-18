@@ -15,6 +15,41 @@ class Operacion{
     );
   }
 
+  static textStyleTitleSubtitle(Icon icono, title, subtitle, double size){
+    return Card(
+      child: Row(
+        children: [
+          icono,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text.rich(
+                TextSpan(
+                  children: <TextSpan>[
+                    TextSpan(
+                        text: title,
+                        style: TextStyle(
+                          fontSize: size,
+                          fontWeight: FontWeight.bold
+                        )),
+                    TextSpan(
+                        text: ' ',
+                        style: TextStyle(fontSize: size)
+                    ),
+
+                    TextSpan(
+                      text: subtitle,
+                      style:  TextStyle(fontSize: size)
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
   
   static nivelCalificacion(int n){
     List<Icon> estrellas = new List();
